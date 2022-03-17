@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>OtterCTF: Memory Forensics</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post11/logo.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>OtterCTF: Memory Forensics</h1>
+                        <h2 class="subheading">Difficulty: Easy</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on July 3, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+
+					<p>Good day. This post will be devoted to <a href="https://en.wikipedia.org/wiki/Computer_forensics"> Computer Forensics</a>. Forensics is quite extensive and has many areas, but today I would like to touch on the topic of <a href="https://en.wikipedia.org/wiki/Memory_forensics">Memory Forensic</a>. This is a forensic analysis of a computer memory dump. It is used to investigate complex computer attacks that leave no marks on the hard drive. Today we will study the forensic analysis of a computer memory dump based on tasks from <a href="https://otterctf.com">OtterCTF</a></p>
+
+					<h3 class="section-heading">1 - What the password?</h3>
+
+					<h4>Description: You got a sample of rick's PC's memory. can you get his user password?</h4>
+
+					<p><a href="https://mega.nz/#!sh8wmCIL!b4tpech4wzc3QQ6YgQ2uZnOmctRZ2duQxDqxbkWYipQ"><strong>Link for downloading a memory image</strong></a></p>
+
+					<p>Our task is to get the user password from the memory dump. Before us is an image of VMware virtual memory. To analyze the dump, I will use the volatility framework. In order to select an image, I will use the <b>-f</b> option. <a href="https://github.com/volatilityfoundation/volatility/wiki/Command-Reference">The list of plugins</a> for volatility is quite large but at this stage we need to determine which profiles support this dump so I will use the <b>imageinfo</b> plugin.</p>
+
+					<a href="../img/post11/image1.png">
+                        <img class="img-responsive" src="../img/post11/image1.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem imageinfo</code></pre>
+
+					<p>Now we have a list of profiles I will work using the <b>Win7SP1x64</b> profile.</p>
+
+					<p>Of course, you can use the hashdump plugin to extract the password hash, but I will use the custom mimikatz plugin.</p>
+
+
+					<pre><code>cd /usr/share/volatility</code></pre>
+
+					<pre><code>mkdir plugins</code></pre>
+
+					<pre><code>wget https://raw.githubusercontent.com/dfirfpi/hotoloti/master/volatility/mimikatz.py</code></pre>
+
+					<pre><code>apt-get install python-crypto</code></pre>
+
+					<p>After installing the plugin, I select the profile with the <b>--profile</b> parameter and also select the plugin directory with the <b>--plugins</b> parameter and the plugin itself.</p>
+
+					<a href="../img/post11/image2.png">
+                        <img class="img-responsive" src="../img/post11/image2.png" alt="">
+                    </a>
+
+					<pre><code>volatility --plugins=/usr/share/volatility/plugins --profile=Win7SP1x64 -f OtterCTF.vmem mimikatz</code></pre>
+
+					<p>And here is the Rick user password.</p>
+
+					<pre><code>CTF{MortyIsReallyAnOtter}</code></pre>
+
+
+					<h3 class="section-heading">2 - General Info</h3>
+
+					<h4>Description: Let's start easy - whats the PC's name and IP address?</h4>
+
+					<p>In order to find out the ip address of the computer, I will use the <b>netscan</b> plugin.</p>
+
+					<a href="../img/post11/image3.png">
+                        <img class="img-responsive" src="../img/post11/image3.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 netscan</code></pre>
+
+					<p>Here we can see the connections of various applications such as BitTorrent and Chrome, but we are interested in the IP address of the computer, so we need to pay attention to the "Local Address" tab. computer ip address is 192.168.202.131</p>
+
+					<p>Now we need a hostname first, I will use the <b>hivelist</b> module to find out the branch we need in the registry.</p>
+
+					<a href="../img/post11/image4.png">
+                        <img class="img-responsive" src="../img/post11/image4.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 hivelist</code></pre>
+
+
+					<p>Now just read this registry branch.</p>
+
+					<a href="../img/post11/image5.png">
+                        <img class="img-responsive" src="../img/post11/image5.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 printkey -o 0xfffff8a000024010 -K 'ControlSet001\Control\ComputerName\ComputerName'</code></pre>
+
+					<pre><code>CTF{192.168.202.131}</code></pre>
+
+					<pre><code>CTF{WIN-LO6FAF3DTFE}</code></pre>
+
+
+				    <h3 class="section-heading">3 - Play Time</h3>
+
+
+					<h4>Description: Rick just loves to play some good old videogames. can you tell which game is he playing? whats the IP address of the server?</h4>
+
+					<p>Now we need to find out the name of the game and the ip address of the server that the rick likes to play. To do this, we again turn to the netscan plugin which will show network connections.</p>
+
+					<a href="../img/post11/image6.png">
+                        <img class="img-responsive" src="../img/post11/image6.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 netscan</code></pre>
+
+					<p>Based on the results of network scanning, it can be seen that the computer was connected to the ip address 77.102.199.102 through the LunarMS.exe application. I do not understand retro games so I decided to google if LunarMS is a game and yes it is a game.</p>
+
+					<pre><code>CTF{LunarMS}</code></pre>
+
+					<pre><code>CTF{77.102.199.102}</code></pre>
+
+					<h3 class="section-heading">4 - Name Game</h3>
+
+					<h4>Description: We know that the account was logged in to a channel called Lunar-3. what is the account name?</h4>
+
+					<p>To find out the nickname I need to dump the process. So using the following command I get a process dump.</p>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 memdump -p 708 -D ./</code></pre>
+
+					<p>So now let's figure out what this command means. using the <b>-p</b> option I specify the <a href="https://en.wikipedia.org/wiki/Process_identifier">PID</a> of the process(I took it from a previous netscan scan) and using the <b>-D</b> option I specify the directory in which I want to pull the dump.</p>
+
+					<a href="../img/post11/image7.png">
+                        <img class="img-responsive" src="../img/post11/image7.png" alt="">
+                    </a>
+
+					<p>Using <b>strings</b> I extract the ascii characters from the dump file and sort them using <b>grep</b>.</p>
+
+					<a href="../img/post11/image8.png">
+                        <img class="img-responsive" src="../img/post11/image8.png" alt="">
+                    </a>
+
+					<pre><code>strings 708.dmp | grep -a Lunar\-3 -C 4</code></pre>
+
+
+					<p>And it seems I found what I need</p>
+
+					<pre><code>CTF{0tt3r8r33z3}</code></pre>
+
+
+					<h3 class="section-heading">5 - Name Game 2</h3>
+
+
+					<h4>Description: From a little research we found that the username of the logged on character is always after this signature: 0x64 0x??{6-8} 0x40 0x06 0x??{18} 0x5a 0x0c 0x00{2} What's rick's character's name?</h4>
+
+					<p>It is quite simple if you immediately understand that it is hex. To search for hex values, I used <b>hexeditor</b>. After some time, I found username.</p>
+
+					<a href="../img/post11/image9.png">
+                        <img class="img-responsive" src="../img/post11/image9.png" alt="">
+                    </a>
+
+					<a href="../img/post11/image10.png">
+                        <img class="img-responsive" src="../img/post11/image10.png" alt="">
+                    </a>
+
+					<p>Username is <b>M0rtyL0L</b></p>
+
+					<pre><code>CTF{M0rtyL0L}</code></pre>
+
+					<h3 class="section-heading">6 - Silly Rick</h3>
+
+					<h4>Description: Silly rick always forgets his email's password, so he uses a Stored Password Services online to store his password. He always copy and paste the password so he will not get it wrong. whats rick's email password?</h4>
+
+					<p>The description of the challenge says that it copies passwords, so I need to get them out of the clipboard. To extract the contents of the clipboard, I will use the <b>clipboard</b> plugin.</p>
+
+					<a href="../img/post11/image11.png">
+                        <img class="img-responsive" src="../img/post11/image11.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 clipboard</code></pre>
+
+					<p>And here is the flag</p>
+
+					<pre><code>CTF{M@il_Pr0vid0rs}</code></pre>
+
+
+					<h3 class="section-heading">7 - Hide And Seek</h3>
+
+
+					<h4>Description: The reason that we took rick's PC memory dump is because there was a malware infection. Please find the malware process name (including the extension)</h4>
+
+					<p>First I will start the process analysis using the pslist plugin</p>
+
+					<a href="../img/post11/image12.png">
+                        <img class="img-responsive" src="../img/post11/image12.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile pslist</code></pre>
+
+
+					<p>When scanning, I noticed two interesting processes:</p>
+					<ol>
+						<li>vmware-tray.exe</li>
+						<li>Rick And Morty ...</li>
+					</ol>
+
+					<p>Now you need to find the files that were launched for this, I will use the <b>filescan</b> plugin.</p>
+
+					<a href="../img/post11/image13.png">
+                        <img class="img-responsive" src="../img/post11/image13.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 filescan</code></pre>
+
+
+					<p>Strange, the vmware-tray.exe file is not in the VMware directory, although it is installed, but in the /Temp/RarSFX0 directory. It looks like the virus is disguising itself as a VMware file. Now in order to make sure that this is a virus, I need to unload it and a memory dump and upload it to VirusTotal.</p>
+
+					<a href="../img/post11/image14.png">
+                        <img class="img-responsive" src="../img/post11/image14.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 dumpfiles -Q 0x000000007dc6cf20 -D ./ -n</code></pre>
+
+					<p>using the <b>-Q</b> parameter I select the Offset, using the <b>-D</b> parameter I select the directory where the file will be uploaded and using the <b>-n</b> parameter i add original file name to output name.</p>
+
+					<a href="../img/post11/image15.png">
+                        <img class="img-responsive" src="../img/post11/image15.png" alt="">
+                    </a>
+
+					<p>I was right, this file is malware.</p>
+
+					<pre><code>CTF{vmware-tray.exe}</code></pre>
+
+
+					<h3 class="section-heading">8 - Path To Glory</h3>
+
+
+					<h4>How did the malware got to rick's PC? It must be one of rick old illegal habits...</h4>
+
+					<p>Now we need to understand how the malware get into Nick's computer. Remember the Rick And Morty process ... I think it's time to analyze it.</p>
+
+					<a href="../img/post11/image16.png">
+                        <img class="img-responsive" src="../img/post11/image16.png" alt="">
+                    </a>
+					<p> </p>
+					<a href="../img/post11/image17.png">
+                        <img class="img-responsive" src="../img/post11/image17.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 filescan</code></pre>
+
+
+					<p>So, I found the Rick And Morty season 1 download file with the exe extension in the torrent directory. Looks like Nick wanted to download season 1 of the Rick And Morty series, but instead of downloading the video in avi or mkv format, he downloads the <a href="https://en.wikipedia.org/wiki/Malware">malware</a> in exe format.</p>
+
+					<p>I dumped a malicious file and uploaded it to VirusTotal. I had no doubt that it was malware.</p>
+
+					<a href="../img/post11/image18.png">
+                        <img class="img-responsive" src="../img/post11/image18.png" alt="">
+                    </a>
+
+					<p>I dumped the process and the exe file, but I did not find anything in them, so I decided to dump the torrent file and read its contents using <b>strings.</b></p>
+
+					<a href="../img/post11/image19.png">
+                        <img class="img-responsive" src="../img/post11/image19.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 dumpfiles -Q 0x000000007dae9350 -n -D ./</code></pre>
+
+					<pre><code>strings 'file.None.0xfffffa801b42c9e0.Rick And Morty season 1 download.exe.1.torrent.dat'</code></pre>
+
+					<p>And here is the flag</p>
+
+					<pre><code>CTF{M3an_T0rren7_4_R!ck}</code></pre>
+
+
+					<h3 class="section-heading">9 - Path To Glory 2</h3>
+
+					<h4>Continue the search after the way that malware got in.</h4>
+
+					<p>Using the <b>pslist</b> plugin, I discovered the chrome.exe process that belongs to the Google browser. Apparently through this browser Rick downloaded the virus because I did not find other browsers on its computer.</p>
+
+					<a href="../img/post11/image20.png">
+                        <img class="img-responsive" src="../img/post11/image20.png" alt="">
+                    </a>
+
+					<p>In order to find the browser history file, I will use the filescan plugin.</p>
+
+					<a href="../img/post11/image21.png">
+                        <img class="img-responsive" src="../img/post11/image21.png" alt="">
+                    </a>
+
+					<p>And here is the history file. Now I need to dump this file from a memory dump.</p>
+
+					<a href="../img/post11/image22.png">
+                        <img class="img-responsive" src="../img/post11/image22.png" alt="">
+                    </a>
+
+					<pre><code>volatility -f OtterCTF.vmem --profile Win7SP1x64 dumpfiles -Q 0x000000007d45dcc0 -D ./ -n</code></pre>
+
+
+					<p>To find out the contents of the file, I will use <b>sqlitebrowser</b>.</p>
+
+					<a href="../img/post11/image23.png">
+                        <img class="img-responsive" src="../img/post11/image23.png" alt="">
+                    </a>
+
+					<p>In order to find out where the torrent file with malicious content was downloaded, I will use the following command.</p>
+
+					<a href="../img/post11/image24.png">
+                        <img class="img-responsive" src="../img/post11/image24.png" alt="">
+                    </a>
+
+					<pre><code>select current_path, site_url from downloads;</code></pre>
+
+					<p>Now I need to search for email related artifacts.</p>
+
+					<a href="../img/post11/image25.png">
+                        <img class="img-responsive" src="../img/post11/image25.png" alt="">
+                    </a>
+
+					<p>After analyzing the content, I found a rick email.</p>
+
+					<pre><code>strings OtterCTF.vmem > OtterCTF.vmem.text</code></pre>
+
+					<pre><code>cat OtterCTF.vmem.text | grep "@mail.com"</code></pre>
+
+					<pre><code>rickopicko@mail.com</code></pre>
+
+
+					<p>Next, I use the <b>grep</b> utility with the <b>-A 30</b> option to display 30 lines after the mail address.</p>
+
+					<a href="../img/post11/image26.png">
+                        <img class="img-responsive" src="../img/post11/image26.png" alt="">
+                    </a>
+
+					<p>After viewing the contents, I find a flag.</p>
+
+					<pre><code>CTF{Hum@n_I5_Th3_Weak3s7_Link_In_Th3_Ch@in}</code></pre>
+
+					<p>That's all. If you want to go through the remaining "Memory Forensic challenges" I left a link at the beginning of my post.</p>
+
+				</div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

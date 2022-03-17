@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Walkthrough sunset: nightfall</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post15/image1.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>SunCSR Team: Tre</h1>
+                        <h2 class="subheading">Difficulty: Intermediate</h2>
+                        <span class="meta">Posted by <a href="../about/">Admin</a>on December 31, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://www.vulnhub.com/series/tre,317/">CTF link</a></p>
+
+                    <p>Good evening! Today I will walkthrough "SunCSR Team: Tre" CTF from VulnHub.</p>
+
+					<h2 class="section-heading">Boot2User</h2>
+
+                    <p>First, I will find the ip address of the vmware virtual machine in my network.</p>
+
+					<a href="../img/post15/image2.png">
+                        <img class="img-responsive" src="../img/post15/image2.png" alt="">
+                    </a>
+
+                    <pre><code>arp-scan -l | grep VMware</code></pre>
+
+                    <p>Now I'll just scan the ports.</p>
+
+					<a href="../img/post15/image3.png">
+                        <img class="img-responsive" src="../img/post15/image3.png" alt="">
+                    </a>
+
+                    <p>While scanning the ports, I found running web servers on ports 80 and 8082. First, I'll start by checking port 80. First, I'll see what files and directories are present on this server using ffuf(You can also use gobuster or dirbuster).</p>
+
+                    <a href="../img/post15/image4.png">
+                        <img class="img-responsive" src="../img/post15/image4.png" alt="">
+                    </a>
+
+                    <pre><code>ffuf -u http://192.168.2.100/FUZZ -w /usr/share/wordlists/dirb/big.txt -e .txt,.html,.php -c</code></pre>
+
+                    <p><b>mantisbt</b>, interesting. Perhaps I need to see what is in this directory.</p>
+
+                    <a href="../img/post15/image5.png">
+                        <img class="img-responsive" src="../img/post15/image5.png" alt="">
+                    </a>
+
+                     <pre><code>ffuf -u http://192.168.2.100/mantisbt/FUZZ -w /usr/share/wordlists/dirb/big.txt -e .txt,.html,.php -c</code></pre>
+
+                    <p>After scanning, I found the / config directory in which the a.txt file with credentials was stored. These credentials can be used with the adminer found in the previous ffuf scan.</p>
+
+                    <a href="../img/post15/image6.png">
+                        <img class="img-responsive" src="../img/post15/image6.png" alt="">
+                    </a>
+
+                    <a href="../img/post15/image7.png">
+                        <img class="img-responsive" src="../img/post15/image7.png" alt="">
+                    </a>
+
+                    <pre><code>mantissuser:password@123AS</code></pre>
+
+                    <p>Using the credentials from the a.txt file, I login in to the database via adminer.</p>
+
+                    <a href="../img/post15/image8.png">
+                        <img class="img-responsive" src="../img/post15/image8.png" alt="">
+                    </a>
+
+                    <p>Now you can start looking for useful information.</p>
+
+
+                    <a href="../img/post15/image9.png">
+                        <img class="img-responsive" src="../img/post15/image9.png" alt="">
+                    </a>
+
+                    <p>In the table mantis_user_table, I find the credentials from the user tre.</p>
+
+                    <a href="../img/post15/image10.png">
+                        <img class="img-responsive" src="../img/post15/image10.png" alt="">
+                    </a>
+
+                    <p>Now I can connect via ssh. I also found a working RCE exploit(<a href="https://www.exploit-db.com/exploits/48818">Mantis Bug Tracker 2.3.0 - Remote Code Execution (Unauthenticated</a>) for Mantis Bug Tracker 2.3.0, but we don't need it.</p>
+
+                    <a href="../img/post15/image11.png">
+                        <img class="img-responsive" src="../img/post15/image11.png" alt="">
+                    </a>
+
+                    <h2 class="section-heading">Privilege Escalation</h2>
+
+					<p>First, I find out that a user can use <b>/sbin/shutdown</b> as administrator, but I don't know why yet.</p>
+
+					<a href="../img/post15/image12.png">
+                        <img class="img-responsive" src="../img/post15/image12.png" alt="">
+                    </a>
+
+                    <pre><code>sudo -l</code></pre>
+
+                    <p>I did not find any SUID files, kernel exploits, etc, so I decided to check the processes using utility pspy.Using PythonHTTPServer and wget, I transfer the pspy64 binary to the server.</p>
+
+                    <a href="../img/post15/image13.png">
+                        <img class="img-responsive" src="../img/post15/image13.png" alt="">
+                    </a>
+
+                    <p>Then use chmod to grant execution permissions.</p>
+
+                    <a href="../img/post15/image14.png">
+                        <img class="img-responsive" src="../img/post15/image14.png" alt="">
+                    </a>
+
+                    <p>And run it.</p>
+
+                    <a href="../img/post15/image15.png">
+                        <img class="img-responsive" src="../img/post15/image15.png" alt="">
+                    </a>
+
+                    <p>As a result of the scan, I find the process / bin / bash / usr / bin / check-system which is executed as root.</p>
+
+                    <a href="../img/post15/image16.png">
+                        <img class="img-responsive" src="../img/post15/image16.png" alt="">
+                    </a>
+
+                    <p>Let's see what this file is. Wow, looks like we have the permissiong to  read-write. With this file we can get root.</p>
+
+                    <a href="../img/post15/image17.png">
+                        <img class="img-responsive" src="../img/post15/image17.png" alt="">
+                    </a>
+
+                    <p>Now I edit the file to get a suid shell, and it will need to create the <b>thisisworks</b> file in the <b>/tmp</b> directory if program <b>/usr/bin/check-system</b> is will run.</p>
+
+                    <a href="../img/post15/image18.png">
+                        <img class="img-responsive" src="../img/post15/image18.png" alt="">
+                    </a>
+
+                    <pre><code>echo "cp /bin/bash /tmp/shell && chmod u+s /tmp/shell && touch /tmp/tisisworks" > /usr/bin/check-system</code></pre>
+
+                    <p>Now you need to restart the server.</p>
+
+                    <a href="../img/post15/image19.png">
+                        <img class="img-responsive" src="../img/post15/image19.png" alt="">
+                    </a>
+
+
+                    <p>Now connect to the server again using ssh and check the <b>/tmp</b> directory. The <b>shell</b> file and the <b>thisisworks</b> file were created, which means that my code worked and the file <b>/usr/bin/check-system</b> started after reboot.</p>
+
+                    <a href="../img/post15/image20.png">
+                        <img class="img-responsive" src="../img/post15/image20.png" alt="">
+                    </a>
+
+                    <p>Now I run a suid shell and get partial root privileges. For complete rooting, I replace the <b>/etc/sudoers</b> file and login with sudo bash.</p>
+
+                    <a href="../img/post15/image21.png">
+                        <img class="img-responsive" src="../img/post15/image21.png" alt="">
+                    </a>
+
+                    <p> First, I copy the <b>/etc/sudoers</b> file to my kali machine and edit, then I upload it to the server and replace.</p>
+
+
+                    <a href="../img/post15/image22.png">
+                        <img class="img-responsive" src="../img/post15/image22.png" alt="">
+                    </a>
+
+                    <a href="../img/post15/image23.png">
+                        <img class="img-responsive" src="../img/post15/image23.png" alt="">
+                    </a>
+
+                    <a href="../img/post15/image24.png">
+                        <img class="img-responsive" src="../img/post15/image24.png" alt="">
+                    </a>
+
+                    <p>Now i get root.</p>
+
+                    <a href="../img/post15/image25.png">
+                        <img class="img-responsive" src="../img/post15/image25.png" alt="">
+                    </a>
+
+                    <p>The <b>/root</b> directory contains the root flag.</p>
+
+                    <a href="../img/post15/image26.png">
+                        <img class="img-responsive" src="../img/post15/image26.png" alt="">
+                    </a>
+
+                    <pre><code>{SunCSR_Tr3_Viet_Nam_2020}</code></pre>
+
+                    <p>It was a very interesting machine. Thanks to the SunCSR Team for this CTF. That's all, thanks for your attention.</p>
+
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

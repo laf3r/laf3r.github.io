@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Walkthrough RickdiculouslyEasy: 1</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post8/main.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>RickdiculouslyEasy: 1</h1>
+                        <h2 class="subheading">Difficulty: Easy</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on April 23, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://www.vulnhub.com/entry/rickdiculouslyeasy-1,207/">CTF link</a></p>
+
+					<p>Good afternoon, I recently started watching the animated series Rick & Morty and after season 1 came to an end I got the idea to find a machine on this topic and I found it - it's RickdiculouslyEasy: 1</p>
+
+					<p>Description:</p>
+
+					<p>This is a fedora server vm, created with virtualbox. It is a very simple Rick and Morty themed boot to root. There are 130 points worth of flags available (each flag has its points recorded with it), you should also get root. It's designed to be a beginner ctf, if you're new to pen testing, check it out!</p>
+
+					<h2 class="section-heading">FTP flag - 10 Points</h2>
+
+					<p>Having scanned the server, you can see that anonymous access to files via FTP is enabled.</p>
+
+					<a href="../img/post8/image1.png">
+                        <img class="img-responsive" src="../img/post8/image1.png" alt="">
+                    </a>
+
+					<pre><code>nmap -A -T4 192.168.2.108</code></pre>
+
+					<p>I connect using authorization data and get a flag(creds anonymous:anonymous)</p>
+
+					<a href="../img/post8/image2.png">
+                        <img class="img-responsive" src="../img/post8/image2.png" alt="">
+                    </a>
+
+					<pre><code>FLAG{Whoa this is unexpected} - 10 Points</code></pre>
+
+				    <h2 class="section-heading">Zeus flag - 10 Points</h2>
+
+
+
+					<p>On the 9090 port there is a website under the control of Zeus admin when you go to which you can see the flag and also the domain that I may need in the future so I will edit the /etc/hosts file</p>
+
+					<a href="../img/post8/image3.png">
+                        <img class="img-responsive" src="../img/post8/image3.png" alt="">
+                    </a>
+
+					<pre><code>nmap 192.168.2.108</code></pre>
+
+					<a href="../img/post8/image4.png">
+                        <img class="img-responsive" src="../img/post8/image4.png" alt="">
+                    </a>
+
+					<pre><code>FLAG {There is no Zeus, in your face!} - 10 Points</code></pre>
+
+					<a href="../img/post8/image5.png">
+                        <img class="img-responsive" src="../img/post8/image5.png" alt="">
+                    </a>
+
+					<pre><code>vim /etc/hosts and :wq</code></pre>
+
+					<h2 class="section-heading">Passwords flag - 10 Points</h2>
+
+					<p>having scanned web directories using the dirb utility, you can see the passwords directory, it will have a flag and passwords.html file</p>
+
+					<a href="../img/post8/image6.png">
+                        <img class="img-responsive" src="../img/post8/image6.png" alt="">
+                    </a>
+
+					<hr>
+
+					<a href="../img/post8/image7.png">
+                        <img class="img-responsive" src="../img/post8/image6.png" alt="">
+                    </a>
+
+					<hr>
+
+					<a href="../img/post8/image8.png">
+                        <img class="img-responsive" src="../img/post8/image8.png" alt="">
+                    </a>
+
+					<pre><code>FLAG{Yeah d- just don't do it.} - 10 Points</code></pre>
+
+					<p>Also in this directory is the passwords.html file</p>
+
+					<a href="../img/post8/image9.png">
+                        <img class="img-responsive" src="../img/post8/image9.png" alt="">
+                    </a>
+
+					<p>If you look at the source code, you can see the winter password that may be needed later</p>
+
+					<a href="../img/post8/image10.png">
+                        <img class="img-responsive" src="../img/post8/image10.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">TCP flag - 10Points</h2>
+
+					<p>If you connect to port 13337 you can get a flag</p>
+
+					<a href="../img/post8/image11.png">
+                        <img class="img-responsive" src="../img/post8/image11.png" alt="">
+                    </a>
+
+					<pre><code>nmap -sS -PN -A -T4  -p 1-65535 192.168.2.108</code></pre>
+
+					<a href="../img/post8/image12.png">
+                        <img class="img-responsive" src="../img/post8/image12.png" alt="">
+                    </a>
+
+					<pre><code>nc 192.168.2.108 13337</code></pre>
+
+					<pre><code>FLAG:{TheyFoundMyBackDoorMorty}-10Points</code></pre>
+
+
+					<h2 class="section-heading">Restructed root shell flag - 10 Points</h2>
+
+					<p>At 60000 port you can see shell</p>
+
+					<a href="../img/post8/image13.png">
+                        <img class="img-responsive" src="../img/post8/image13.png" alt="">
+                    </a>
+
+					<pre><code>nmap -sS -PN -A -T4  -p 1-65535 192.168.2.108</code></pre>
+
+					<p>Despite the fact that we have root privileges we can’t do anything other than look at the flag.</p>
+
+					<a href="../img/post8/image14.png">
+                        <img class="img-responsive" src="../img/post8/image14.png" alt="">
+                    </a>
+
+					<pre><code>FLAG{Flip the pickle Morty!} - 10 Points</code></pre>
+
+
+					<h2 class="section-heading">Get shell</h2>
+
+					<p>In the directory /cgi-bin/ on the 80 port I notice the tracertool.cgi file with which you can command execution</p>
+
+					<a href="../img/post8/image15.png">
+                        <img class="img-responsive" src="../img/post8/image15.png" alt="">
+                    </a>
+
+					<hr>
+
+					<a href="../img/post8/image16.png">
+                        <img class="img-responsive" src="../img/post8/image16.png" alt="">
+                    </a>
+
+					<p>I tried to get the contents of the file /etc/passwd but when I call the utility /usr/bin/cat I get a cat so I have to use something else</p>
+
+					<a href="../img/post8/image17.png">
+                        <img class="img-responsive" src="../img/post8/image17.png" alt="">
+                    </a>
+
+					<p>In order to read the contents of the passwd file I will use less</p>
+
+					<a href="../img/post8/image18.png">
+                        <img class="img-responsive" src="../img/post8/image18.png" alt="">
+                    </a>
+
+					<pre><code>127.0.0.1; less /etc/passwd</code></pre>
+
+					<p>Now i know the usernames</p>
+
+					<pre><code>RickSanchez, Morty, Summer.</code></pre>
+
+					<h2 class="section-heading">Summer flag - 10 Points</h2>
+
+					<p>Remember the password from the passwords directory? if so then it’s good with the help of it and usernames I will try to get the data for authentication.</p>
+
+					<p>After 5 seconds of brute force I got a user.</p>
+
+					<a href="../img/post8/image19.png">
+                        <img class="img-responsive" src="../img/post8/image19.png" alt="">
+                    </a>
+
+					<pre><code>For FTP hydra -L usernames.txt -P password.txt ftp://192.168.2.108</code></pre>
+
+					<pre><code>For SSH hydra -L usernames.txt -P password.txt ssh://192.168.2.108 -s 22222</code></pre>
+
+					<a href="../img/post8/image20.png">
+                        <img class="img-responsive" src="../img/post8/image20.png" alt="">
+                    </a>
+
+					<pre><code>ssh Summer@192.168.2.108 -p 22222</code></pre>
+
+					<pre><code>Summer:winter</code></pre>
+
+					<p>In the directory we see the flag but do not forget that in order to view it you need to use less</p>
+
+					<a href="../img/post8/image21.png">
+                        <img class="img-responsive" src="../img/post8/image21.png" alt="">
+                    </a>
+
+					<pre><code>FLAG{Get off the high road Summer!} - 10 Points</code></pre>
+
+					<h2 class="section-heading">{131333} flag - 20 Points</h2>
+
+					<p>In the home directory of the user Morty I find a password-protected zip file and a picture with a password</p>
+
+					<a href="../img/post8/image22.png">
+                        <img class="img-responsive" src="../img/post8/image22.png" alt="">
+                    </a>
+
+					<p>In order to study the picture in more detail, I use python HTTPServer and accept it on my host using wget</p>
+
+					<pre><code>python -m SimpleHTTPServer 9221</code></pre>
+
+					<pre><code>wget http://192.168.2.108/journal.txt.zip</code></pre>
+
+					<pre><code>wget http://192.168.2.108/Safe_Password.jpg</code></pre>
+
+					<p>Looking at the image code, I get the password from the zip file</p>
+
+					<a href="../img/post8/image23.png">
+                        <img class="img-responsive" src="../img/post8/image23.png" alt="">
+                    </a>
+
+					<pre><code>Password: Meeseek</code></pre>
+
+					<p>After extracting file i get a flag</p>
+
+					<a href="../img/post8/image24.png">
+                        <img class="img-responsive" src="../img/post8/image24.png" alt="">
+                    </a>
+
+					<pre><code>FLAG: {131333} - 20 Points</code></pre>
+
+					<h2 class="section-heading">And Awwwaaaaayyyy we Go! - 20 Points</h2>
+
+					<p>In the home directory of the user RickSanchez I find the file safe if it is called that means it contains something. It is an executable file and in order to run it I create a copy of it in the /tmp directory.</p>
+
+					<a href="../img/post8/image25.png">
+                        <img class="img-responsive" src="../img/post8/image25.png" alt="">
+                    </a>
+
+					<p>I enter the numbers of the last flag as an argument and get the flag.</p>
+
+					<a href="../img/post8/image26.png">
+                        <img class="img-responsive" src="../img/post8/image26.png" alt="">
+                    </a>
+
+					<pre><code>FLAG{And Awwwaaaaayyyy we Go!}</code></pre>
+
+
+					<h2 class="section-heading">Root and Ionic Defibrillator - 30 points</h2>
+
+					<p>In the previous flag, rick wrote hints that will help us in generating the dictionary for brute force password.</p>
+
+					<p>In order to find out the name Rick’s band ’I look for information <a href="https://rickandmorty.fandom.com/wiki/Rick_Sanchez">here</a>.</p>
+
+					<p>To generate a password, I wrote easy python script</p>
+
+					<a href="../img/post8/image27.png">
+                        <img class="img-responsive" src="../img/post8/image27.png" alt="">
+                    </a>
+
+					<p>And I get a password</p>
+
+					<a href="../img/post8/image28.png">
+                        <img class="img-responsive" src="../img/post8/image28.png" alt="">
+                    </a>
+
+					<pre><code>RickSanchez:P7Curtains</code></pre>
+
+					<p>After connecting to RickSanchez user I easily get root and get access to the last flag</p>
+
+					<a href="../img/post8/image29.png">
+                        <img class="img-responsive" src="../img/post8/image29.png" alt="">
+                    </a>
+
+					<hr>
+
+					<a href="../img/post8/image30.png">
+                        <img class="img-responsive" src="../img/post8/image30.png" alt="">
+                    </a>
+
+					<pre><code>FLAG: {Ionic Defibrillator} - 30 points</code></pre>
+
+
+			    </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
