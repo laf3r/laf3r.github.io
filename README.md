@@ -1,4 +1,4 @@
-# laf3r.github.io
+# Cybersecurity blog by laf3r (Innokentiy Gerasimov) laf3r.github.io
 ![image](https://user-images.githubusercontent.com/101829424/173810167-07455481-0f03-41c2-8a2d-d32f3d2ebb46.png)
 
 
